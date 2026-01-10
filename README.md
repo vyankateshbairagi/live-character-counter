@@ -19,13 +19,7 @@ A sleek, feature-rich character counter with real-time analytics, dark mode, and
 - **Zero Dependencies** - Pure vanilla HTML, CSS, and JavaScript
 - **Accessibility** - Font Awesome icons for visual feedback
 
----
 
-## 🎯 Live Demo
-
-[View Live Demo](https://vyankatesh014.github.io/live-character-counter) (if hosted)
-
----
 
 ## 🚀 Quick Start
 
@@ -180,7 +174,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Vyankatesh** 
 - GitHub: [@vyankatesh014](https://github.com/vyankatesh014)
-- LinkedIn: [Your LinkedIn Profile]
+- LinkedIn: [@vyankatesh bairagi](https://www.linkedin.com/in/vyankateshbairagi/)
 
 ---
 
