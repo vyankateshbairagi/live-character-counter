@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Character Counter - Professional Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 700;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1em;
+            font-weight: 400;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .container {
+            background: rgba(30, 30, 50, 0.95);
+            color: #fff;
+        }
+
+        body.dark-mode .header h1 {
+            background: linear-gradient(135deg, #a8c0ff 0%, #c5b3f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body.dark-mode .header p,
+        body.dark-mode label,
+        body.dark-mode .info-text,
+        body.dark-mode .stats-item span {
+            color: #ccc;
+        }
+
+        body.dark-mode input[type="text"],
+        body.dark-mode textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        body.dark-mode input[type="text"]::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #888;
+        }
+
+        body.dark-mode .progress-bar-container {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8c0ff;
+        }
+
+        body.dark-mode .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        body.dark-mode .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .stats-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .input-section {
+            margin-bottom: 35px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .input-section:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .label-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label i {
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .counter-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .counter-badge.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: pulse 1s infinite;
+        }
+
+        .counter-badge.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1),
+                        0 8px 20px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.6;
+        }
+
+        .progress-bar-container {
+            margin-top: 10px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .progress-bar.warning {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .info-text {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-text i {
+            color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .stats-panel {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .stats-panel.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .stats-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .stats-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .stats-item .number {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stats-item span {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast i {
+            font-size: 1.2em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .label-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 10px 14px;
+            }
+
+            .toast {
+                right: 10px;
+                left: 10px;
+                bottom: 20px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-keyboard"></i> Live Character Counter</h1>
+            <p>Track your characters in real-time with style</p>
+        </div>
+
+        <div class="input-section" id="char">
+            <div class="label-container">
+                <label id="charLabel">
+                    <i class="fas fa-text-width"></i>
+                    Enter Your Text
+                </label>
+                <span class="counter-badge" id="charBadge">0</span>
+            </div>
+            <input id="charInput" type="text" placeholder="Start typing here..." />
+            <div class="action-buttons">
+                <button class="btn" id="charCopy" title="Copy to clipboard">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="btn btn-secondary" id="charClear" title="Clear text">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div class="stats-panel" id="charStats">
+                <div class="stats-grid">
+                    <div class="stats-item">
+                        <div class="number" id="charWords">0</div>
+                        <span>Words</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="charLetters">0</div>
+                        <span>Letters</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="charNumbers">0</div>
+                        <span>Numbers</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="charSpecial">0</div>
+                        <span>Special</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section" id="msg">
+            <div class="label-container">
+                <label id="msgLabel">
+                    <i class="fas fa-comment-dots"></i>
+                    Express Your Thoughts
+                </label>
+                <span class="counter-badge success" id="msgBadge">0 / 100</span>
+            </div>
+            <textarea id="msgInput" placeholder="Share your ideas, thoughts, or messages here..." maxlength="100"></textarea>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn" id="msgCopy" title="Copy to clipboard">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="btn btn-secondary" id="msgClear" title="Clear text">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div class="stats-panel" id="msgStats">
+                <div class="stats-grid">
+                    <div class="stats-item">
+                        <div class="number" id="msgWords">0</div>
+                        <span>Words</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="msgLetters">0</div>
+                        <span>Letters</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="msgNumbers">0</div>
+                        <span>Numbers</span>
+                    </div>
+                    <div class="stats-item">
+                        <div class="number" id="msgSpecial">0</div>
+                        <span>Special</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Action completed!</span>
+    </div>
+
+    <script src="style.js"></script>
+</body>
+
+</html>
